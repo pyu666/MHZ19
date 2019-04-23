@@ -1,5 +1,5 @@
 # MHZ19 
-Arduino IDE library for operating the MH-Z19 CO2 sensor in ESP-WROOM-02/32(ESP8266/ESP32) or Arduino  
+Arduino IDE library for operating the MH-Z19 CO2 sensor in ESP-WROOM-32(ESP32)  
 version 0.3
 
 # Credits and license  
@@ -16,14 +16,11 @@ License MIT
     MH-Z19 Rx   to Arduino Digital Pin (Serial Tx pin)  
     other MH-Z19 pins are not used.  
     
-* Wiring the MH-Z19 through PWM use a PWM pin from your Arduino,ESP8266 or ESP32
 * Read sample source code. It's very simple !
 
 # caution
 
-* This library is testing only ESP-WROOM-02/32(ESP8266/ESP32) boards. if you can't execute this library on your arduino (or clone) boards, please contact me.
-
-* The Sensor through PWM can only implement getPPM(MHZ19_POTOCOL::PWM), so in order to use all the functionalities use UART protocol.
+* This library is testing only ESP-WROOM-32(ESP32) boards. 
 
 # MHZ19 library function
 
@@ -32,16 +29,18 @@ License MIT
 * MHZ19  
   normal constractor. if you use this constractor, you must execute begin() function after this constractor execute.
 
-* MHZ19(int rx, int tx)  
-  setting rx and tx pin, and initialize Software Serial.
+* MHZ19(int hw)  
+  setting Hardware Serial pins, and initialize Hardware Serial.
   
-* MHZ19(int pwm_pin)
-  settings pwm pin.
+  ESP32 UART pins
+  - UART0 ( default RX=GPIO3, TX=GPIO1 ) 
+  - UART1 ( default RX=GPIO9, TX=GPIO10 ) **cannot use default pin! Do not work!
+  - UART2 ( default RX=GPIO16, TX=GPIO17 )
 
 ## public function for UART
 
-* void begin(int rx, int tx)  
-  setting rx and tx pin, and initialize Software Serial.
+* void begin(int hw, int tx)  
+  setting Hardware Serial pins, and initialize Hardware Serial.
   
 * void setAutoCalibration(bool autocalib)  
   MH-Z19 has automatic calibration procedure. the MH-Z19 executing automatic calibration, its do zero point(stable gas environment (400ppm)) judgement.
@@ -57,9 +56,6 @@ License MIT
   if you want to execute span point calibration, the MH-Z19 sensor must work in between 1000 to 2000ppm level co2 for over 20 minutes and you execute this function.
   
 * int getPPM(MHZ19_POTOCOL::UART)  
-  get co2 ppm.
-  
-* int getPPM(MHZ19_POTOCOL::PWM)  
   get co2 ppm.
   
 * int getTemperature()  
@@ -79,22 +75,30 @@ License MIT
   http://www.winsen-sensor.com/d/files/infrared-gas-sensor/mh-z19b-co2-ver1_0.pdf
 
 # history
+forked from crisap94's version
 * ver. 0.1: closed version.
 * ver. 0.2: first release version.
 * ver. 0.3: support ESP-WROOM-32(ESP32)
 * ver. 0.4: Implementing PWM readings and refactor library use.
 
+my version
+* ver. 0.1: Change to only use Hardware Serial.
+
 # Example Code
 
-```
-#include <Arduino.h>
+```/*----------------------------------------------------------
+    MH-Z19 CO2 sensor  SAMPLE
+  ----------------------------------------------------------*/
+
 #include "MHZ19.h"
 
-const int rx_pin = 13; //Serial rx pin no
-const int tx_pin = 15; //Serial tx pin no
-const int pwmpin = 14;
-MHZ19 *mhz19_uart = new MHZ19(rx_pin,tx_pin);
-MHZ19 *mhz19_pwm = new MHZ19(pwmpin);
+const int hw_pin = 2 ;
+/*
+UART0 ( default RX=GPIO3, TX=GPIO1 ) 
+UART1 ( default RX=GPIO9, TX=GPIO10 ) **cannot use default pin!
+UART2 ( default RX=GPIO16, TX=GPIO17 )
+*/
+MHZ19 *mhz19_uart = new MHZ19(hw_pin);
 
 /*----------------------------------------------------------
     MH-Z19 CO2 sensor  setup
@@ -102,7 +106,7 @@ MHZ19 *mhz19_pwm = new MHZ19(pwmpin);
 void setup()
 {
     Serial.begin(115200);
-    mhz19_uart->begin(rx_pin, tx_pin);
+    mhz19_uart->begin(hw_pin);
     mhz19_uart->setAutoCalibration(false);
     while (mhz19_uart->isWarming())
     {
@@ -124,11 +128,6 @@ void loop()
     Serial.println(co2ppm);
     Serial.print("temp: ");
     Serial.println(temp);
-
-    co2ppm = mhz19_pwm->getPPM(MHZ19_POTOCOL::PWM);
-    Serial.print("co2: ");
-    Serial.println(co2ppm);
-    
 
     delay(5000);
 }
