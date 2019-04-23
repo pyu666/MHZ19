@@ -1,22 +1,23 @@
 /*----------------------------------------------------------
     MH-Z19 CO2 sensor  Span calibration SAMPLE
+
+    !! Caution: This program is not confirmed !!
   ----------------------------------------------------------*/
 
-#include <MHZ19_uart.h>
+#include "MHZ19.h"
 
-const int rx_pin = 4;  //Serial rx pin no
-const int tx_pin = 5;  //Serial tx pin no
-
+const int hw_pin = 2;  //Serial tx pin no
+//UART2 ( default RX=GPIO16, TX=GPIO17 )
 const int waitingMinutes = 30;  //waiting 30 minutes
 
-MHZ19_uart mhz19;
+MHZ19 mhz19;
 
 /*----------------------------------------------------------
     MH-Z19 CO2 sensor  setup
   ----------------------------------------------------------*/
 void setup() {
   Serial.begin(9600);
-  mhz19.begin(rx_pin, tx_pin);
+  mhz19.begin(hw_pin);
 
   mhz19.setAutoCalibration(false);
   while ( mhz19.isWarming() ) {
@@ -34,7 +35,7 @@ long avg_sum = 0L;
 const long waitingSeconds = waitingMinutes * 60L;
 void loop() {
   if ( ++cnt % 60 == 0) {
-    int ppm = mhz19.getPPM();
+    int ppm = mhz19.getPPM(MHZ19_POTOCOL::UART);
     avg_sum += (long)ppm;
     Serial.print(cnt / 60); Serial.println("min.");
     Serial.print("co2: "); Serial.print(ppm); Serial.println("ppm now.");
@@ -58,7 +59,7 @@ void loop() {
     Serial.println("span calibration now .");
 
     for ( int i = 0; i < 10; i++) {
-      Serial.print("co2: "); Serial.print(mhz19.getPPM()); Serial.println("ppm now.");
+      Serial.print("co2: "); Serial.print(mhz19.getPPM(MHZ19_POTOCOL::UART)); Serial.println("ppm now.");
       delay(10000);
     }
     cnt = 0;
@@ -66,4 +67,3 @@ void loop() {
   }
 
 }
-
