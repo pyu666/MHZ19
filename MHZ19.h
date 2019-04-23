@@ -36,7 +36,7 @@ class MHZ19
     MHZ19(int hw);
 	virtual ~MHZ19();
 
-    void beginHW(int hw);
+    void begin(int hw);
 	void setAutoCalibration(boolean autocalib);
 	void calibrateZero();
 	void calibrateSpan(int ppm);
@@ -54,7 +54,7 @@ class MHZ19
   private:
 	uint8_t mhz19_checksum(uint8_t com[]);
 	int getSerialData(MHZ19_UART_DATA flg);
-	int getPwmData();
+	//int getPwmData();
 	void setPwmData(MHZ19_PWM_DATA type);
 
 	static const int REQUEST_CNT = 8;

@@ -61,9 +61,9 @@ int MHZ19::getPPM(MHZ19_POTOCOL protocol)
 	case MHZ19_POTOCOL::UART:
 		data = getSerialData(MHZ19_UART_DATA::PPM);
 		break;
-	case MHZ19_POTOCOL::PWM:
-		data = getPwmData();
-		break;
+//    case MHZ19_POTOCOL::PWM:
+//        data = getPwmData();
+//        break;
 	}
 	return data;
 }
@@ -153,28 +153,28 @@ int MHZ19::getSerialData(MHZ19_UART_DATA flg)
 		break;
 	}
 }
-
-int MHZ19::getPwmData()
-{
-	unsigned long th, tl, ppm = 0;
-
-	do
-	{
-		th = pulseIn(_pwm_pin, HIGH, 1004000) / 1000;
-		tl = 1004 - th;
-		switch (PWM_DATA_SELECT)
-		{
-		case MHZ19_PWM_DATA::CALC_2000_PPM:
-			ppm = 2000 * (th - 2) / (th + tl - 4);
-			break;
-		case MHZ19_PWM_DATA::CALC_5000_PPM:
-			ppm = 5000 * (th - 2) / (th + tl - 4);
-			break;
-		}
-	} while (th == 0);
-
-	return ppm;
-}
+//
+//int MHZ19::getPwmData()
+//{
+//    unsigned long th, tl, ppm = 0;
+//
+//    do
+//    {
+//        th = pulseIn(_pwm_pin, HIGH, 1004000) / 1000;
+//        tl = 1004 - th;
+//        switch (PWM_DATA_SELECT)
+//        {
+//        case MHZ19_PWM_DATA::CALC_2000_PPM:
+//            ppm = 2000 * (th - 2) / (th + tl - 4);
+//            break;
+//        case MHZ19_PWM_DATA::CALC_5000_PPM:
+//            ppm = 5000 * (th - 2) / (th + tl - 4);
+//            break;
+//        }
+//    } while (th == 0);
+//
+//    return ppm;
+//}
 
 void MHZ19::setPwmData(MHZ19_PWM_DATA type)
 {
