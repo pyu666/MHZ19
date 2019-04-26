@@ -17,10 +17,11 @@ MHZ19 mhz19;
     MH-Z19 CO2 sensor  setup
   ----------------------------------------------------------*/
 void setup() {
+  
   Serial.begin(9600);
   mhz19.begin(hw_pin);
   mhz19.setAutoCalibration(false);
-  while ( mhz19.isWarming() ) {
+  while ( mhz19.isWarming() == -1) {
     Serial.print("MH-Z19 now warming up...  status:"); Serial.println(mhz19.getStatus());
     delay(1000);
   }
